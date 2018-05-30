@@ -48,7 +48,7 @@ rm(con)
 rm(drv)
 
 #Modify Place Names file
-areas <- areas %>%
+areas <- areas %>% arrange(place) %>%
   mutate(county = paste0(county, " County"),
          id=paste0(countyfips,placefips))
 
@@ -130,7 +130,7 @@ chousedata <- bind_rows(chouse,sumhouse)
 
 # Creating wide SDo Population data set
 
-sdopop <- sdopopdata[,c(2,3,9,15,10,11,13,14,12,16,17)]
+sdopop <- sdopopdata[,c(1,2,3,9,15,10,11,13,14,12,16,17)]
 
 # Formatting Values
 sdopop$tp <-  formatC(sdopop$tp, format="d", big.mark=",")
@@ -142,10 +142,10 @@ sdopop$ohu <-  formatC(sdopop$ohu, format="d", big.mark=",")
 sdopop$vhu <-  formatC(sdopop$vhu, format="d", big.mark=",")
 sdopop$vr <-  format(sdopop$vr, nsmall=2)
 
-sdopop2 <- sdopop %>% gather(popname,val, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
+sdopop2 <- sdopop %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
 sdopop3 <- unique(sdopop2) %>%  spread(vartype, val)
 
-sdopop3 <- sdopop3[,c(1:3,5,6,4,7:13)]
+sdopop3 <- sdopop3[,c(1:4,6,7,5,8:14)]
 
 #setting variable values
 sdopop3$popname <- ifelse(sdopop3$popname == "tp","Total Population",
@@ -161,23 +161,24 @@ sdopop3$popname <- factor(sdopop3$popname, levels = c("Total Population", "Group
                                                       "Vacant Housing Units","Vacancy Rate"))
 # cpopdata
 
-cpop1 <- cpopdata[,c(1,2,5,6)]
+cpop1 <- cpopdata[,c(3,1,2,5,6)]
 cpop1$censuspop <- formatC(cpop1$censuspop, format="d", big.mark=",")
 
-cpop2 <- cpop1 %>% gather(popname,val, -countyfips, -placefips, -vartype) 
+cpop2 <- cpop1 %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) 
 cpop3 <- unique(cpop2) %>%  spread(vartype, val)
-cpop3 <- cpop3[,c(1:3,5,6,4,7:13)]
-
+cpop3 <- cpop3[,c(1:4,6,7,5,8:14)]
+cpop3$id <- paste0(cpop3$countyfips,cpop3$placefips)
 cpop3$popname <- "Total Population"
 
 #SDO Housing
-sdobp <- sdohousedata[,c(2,3,5:9)]
+sdobp <- sdohousedata[,c(1,2,3,5:9)]
+sdobp$id <- paste0(sdobp$countyfips,sdobp$placefips)
 sdobp$localbp <- formatC(sdobp$localbp, format="d", big.mark=",")
 sdobp$localdemo <- formatC(sdobp$localdemo, format="d", big.mark=",")
 sdobp$localco <- formatC(sdobp$localco, format="d", big.mark=",")
 sdobp$localmhc <- formatC(sdobp$localmhc, format="d", big.mark=",")
 
-sdobp2 <- sdobp %>% gather(popname,val, -countyfips, -placefips, -year) %>% filter(placefips != "00000") 
+sdobp2 <- sdobp %>% gather(popname,val, -id, -countyfips, -placefips, -year) %>% filter(placefips != "00000") 
 sdobp3 <- unique(sdobp2) %>%  spread(year, val)
 
 
@@ -190,11 +191,12 @@ sdobp3$popname <- factor(sdobp3$popname, levels = c("Local Building Permits","Lo
 
 
 # Census Housing
- cbp <- chousedata[,c(1,2,4:6)]
+ cbp <- chousedata[,c(3,1,2,4:6)]
+ cbp$id <- paste0(cbp$countyfips,cbp$placefips)
  cbp$censushu <- formatC(cbp$censushu, format="d", big.mark=",")
  cbp$censusbp <- formatC(cbp$censusbp, format="d", big.mark=",")
  
- cbp2 <- cbp %>% gather(popname,val, -countyfips, -placefips, -year) 
+ cbp2 <- cbp %>% gather(popname,val, -id, -countyfips, -placefips, -year) 
  cbp3 <- unique(cbp2) %>%  spread(year, val)
  
  cbp3$popname <- ifelse(cbp3$popname == "censushu","Census Housing Units","Census Building Permits")

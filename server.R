@@ -58,10 +58,10 @@ bp_tab <- function(inmat,capstr){
 
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
-  m.sdopop <- as.matrix(sdopop[c(6,1,2,4,5,3,7,8),3:13])
-  m.cpop <- as.matrix(cpop[,3:13])
-  m.sdobp <- as.matrix(sdobp[,3:10])
-  m.cbp <- as.matrix(cbp[c(2,1),3:10])
+  m.sdopop <- as.matrix(sdopop[c(6,1,2,4,5,3,7,8),4:14])
+  m.cpop <- as.matrix(cpop[,4:14])
+  m.sdobp <- as.matrix(sdobp[,4:11])
+  m.cbp <- as.matrix(cbp[c(2,1),4:11])
   
   sdopoptab <-  pop_tab(m.sdopop,"State Demography Office Population Estimates")
   cpoptab <- pop_tab(m.cpop,"U.S. Census Bureau Population Estimates")
@@ -75,11 +75,18 @@ tab_proc <- function(sdopop,cpop,sdobp,cbp) {
 
 tab_process <- function(plnum,ctymat,sdopop,censpop,sdobp,censbp) {
   #Function to process output tables data, retuns tabPanels for display
-
-  sdopop <- subset(sdopop, placefips %in% plnum)
-  cpop <- subset(censpop, placefips %in% plnum)
-  sdobp <- subset(sdobp, placefips %in% plnum)
-  cbp <- subset(censbp, placefips %in% plnum)
+  if(plnum == "99990")  { # Unincoprorated area
+    idval <- paste0(ctymat[1,1],plnum)
+    sdopop <- subset(sdopop, id %in% idval)
+    cpop <- subset(censpop, id %in% idval)
+    sdobp <- subset(sdobp, id %in% idval)
+    cbp <- subset(censbp, id %in% idval)
+    }  else {
+    sdopop <- subset(sdopop, placefips %in% plnum)
+    cpop <- subset(censpop, placefips %in% plnum)
+    sdobp <- subset(sdobp, placefips %in% plnum)
+    cbp <- subset(censbp, placefips %in% plnum)
+    }
   
  if(nrow(sdopop) == 8) { # Single county Municipality
     outtab <- tab_proc(sdopop,cpop,sdobp,cbp) 
