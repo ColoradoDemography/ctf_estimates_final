@@ -48,9 +48,11 @@ rm(con)
 rm(drv)
 
 #Modify Place Names file
-areas <- areas %>% arrange(place) %>%
+areas$locid <- ifelse(grepl("Unincorporated",areas$place),1,0)
+areas <- areas %>% arrange(locid, place) %>%
   mutate(county = paste0(county, " County"),
          id=paste0(countyfips,placefips))
+areas <- areas[,c(1:5,7)]
 
 # Population Estimates data file
 
