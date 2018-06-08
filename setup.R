@@ -138,14 +138,13 @@ sdopop <- sdopopdata[,c(1,2,3,9,15,10,11,13,14,12,16,17)]
 sdopop$tp <-  formatC(sdopop$tp, format="d", big.mark=",")
 sdopop$groupquarters <-  formatC(sdopop$groupquarters, format="d", big.mark=",")
 sdopop$hp <-  formatC(sdopop$hp, format="d", big.mark=",")
-sdopop$pph <-  format(sdopop$pph, nsmall=2)
+sdopop$pph <-  format(round(sdopop$pph,2), nsmall=2)
 sdopop$thu <-  formatC(sdopop$thu, format="d", big.mark=",")
 sdopop$ohu <-  formatC(sdopop$ohu, format="d", big.mark=",")
 sdopop$vhu <-  formatC(sdopop$vhu, format="d", big.mark=",")
-sdopop$vr <-  format(sdopop$vr, nsmall=2)
+sdopop$vr <-  format(round(sdopop$vr,2), nsmall=2)
 
-sdopop$pph <- str_replace(sdopop$pph,"0000","")
-sdopop$vr <- str_replace(sdopop$vr,"0000","")
+
 
 sdopop2 <- sdopop %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
 sdopop3 <- unique(sdopop2) %>%  spread(vartype, val)
