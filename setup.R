@@ -144,6 +144,9 @@ sdopop$ohu <-  formatC(sdopop$ohu, format="d", big.mark=",")
 sdopop$vhu <-  formatC(sdopop$vhu, format="d", big.mark=",")
 sdopop$vr <-  format(sdopop$vr, nsmall=2)
 
+sdopop$pph <- str_replace(sdopop$pph,"0000","")
+sdopop$vr <- str_replace(sdopop$vr,"0000","")
+
 sdopop2 <- sdopop %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
 sdopop3 <- unique(sdopop2) %>%  spread(vartype, val)
 
