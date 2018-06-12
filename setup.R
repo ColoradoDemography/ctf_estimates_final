@@ -184,7 +184,7 @@ sdobp$localmhc <- formatC(sdobp$localmhc, format="d", big.mark=",")
 
 sdobp2 <- sdobp %>% gather(popname,val, -id, -countyfips, -placefips, -year) %>% filter(placefips != "00000") 
 sdobp3 <- unique(sdobp2) %>%  spread(year, val)
-sdobp3 <- sdobp3[,c(1:4,6:12)]
+
 
 sdobp3$popname <- ifelse(sdobp3$popname == "localbp","Local Building Permits",
                   ifelse(sdobp3$popname == "localdemo","Local Demolition Permits",

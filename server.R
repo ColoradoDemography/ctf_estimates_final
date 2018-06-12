@@ -58,10 +58,11 @@ bp_tab <- function(inmat,capstr){
 
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
+
   m.sdopop <- as.matrix(sdopop[c(6,1,2,4,5,3,7,8),4:14])
   m.cpop <- as.matrix(cpop[,4:14])
-  m.sdobp <- as.matrix(sdobp[,4:11])
-  m.cbp <- as.matrix(cbp[c(2,1),4:11])
+  m.sdobp <- as.matrix(sdobp[,c(4,6:12)])
+  m.cbp <- as.matrix(cbp[c(2,1),c(4,6:12)])
   
   sdopoptab <-  pop_tab(m.sdopop,"State Demography Office Population Estimates")
   cpoptab <- pop_tab(m.cpop,"U.S. Census Bureau Population Estimates")
