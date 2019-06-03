@@ -6,7 +6,7 @@ source("setup.R")
 pop_tab <- function(inmat,capstr) {
 #Kable population table
   popname <- c("Variable", "2010 Census", "2010 Adj. Census", "July 2010", 
-               "July 2011", "July 2012", "July 2013", "July 2014", "July 2015", "July 2016", "July 2017")
+               "July 2011", "July 2012", "July 2013", "July 2014", "July 2015", "July 2016", "July 2017", "July 2018")
   outtab <- inmat %>%
   kable(format='html',
         row.names=FALSE,
@@ -33,7 +33,7 @@ pop_tab <- function(inmat,capstr) {
 bp_tab <- function(inmat,capstr){
   #kable housing table
   housename <- c("Variable", "2010 to 2011", "2011 to 2012", "2012 to 2013", "2013 to 2014", "2014 to 2015", 
-                 "2015 to 2016","2016 to 2017")
+                 "2015 to 2016","2016 to 2017", "2017 to 2018")
   
   outtab <- inmat %>%
     kable(format='html',
