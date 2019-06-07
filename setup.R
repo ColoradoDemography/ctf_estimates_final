@@ -1,4 +1,4 @@
-# Revision to CTF program Adam Bickford May-June 2018
+# Revision to CTF program Adam Bickford June 2019
 # There are many changes, including updates to tidyverse,
 # addition of code to read data from the postgres database,
 # and update of the data processing steps to read the new
@@ -13,41 +13,44 @@ library(knitr)
 library(kableExtra)
 library(RPostgreSQL)
 
+# Additions for Database pool  6/5/2019
+library('pool') 
+library('DBI')
+library('stringr')
+library('config')
+
+# Set up database pool 6/5/2019
+
+config <- get("database")
+DOLAPool <-  dbPool(
+  drv <- dbDriver(config$Driver),
+  dbname = config$Database,
+  host = config$Server,
+  port = config$Port,
+  user = config$UID,
+  password = config$PWD
+)
+
 
 #Read data from the Postgres database
 
 #Prepping SQL calls
 RCSSQL <- "SELECT * FROM data.ctf_rcs_names;"
-POPESTSQL <- "SELECT * FROM data.ctf_pop_est;"
-CONSTRSQL <- "SELECT * FROM data.ctf_construction;"
+POPESTSQL <- "SELECT * FROM data.ctf_pop_est ORDER BY countyfips, vartype;"
+CONSTRSQL <- "SELECT * FROM data.ctf_construction ORDER BY countyfips, year;"
 
-# Call to Postrgres  
-pw <- {
-  "demography"
-}
-
-# loads the PostgreSQL driver
-drv <- dbDriver("PostgreSQL")
-# creates a connection to the postgres database
-# note that "con" will be used later in each connection to the database
-con <- dbConnect(drv, dbname = 'dola',
-                 host = "104.197.26.248", port = 5433,
-                 user = "codemog", password = pw)
-rm(pw) # removes the password
 
 # Read data files
-areas <- dbGetQuery(con,RCSSQL)
-popdata <- dbGetQuery(con,POPESTSQL)
-housedata <- dbGetQuery(con, CONSTRSQL) 
+areas <- dbGetQuery(DOLAPool,RCSSQL)
+popdata <- dbGetQuery(DOLAPool,POPESTSQL)
+housedata <- dbGetQuery(DOLAPool, CONSTRSQL) 
 
 
 #closing the connections
-dbDisconnect(con)
-dbUnloadDriver(drv)
-rm(con)
-rm(drv)
+poolClose(DOLAPool)
 
 #Modify Place Names file
+
 areas$locid <- ifelse(grepl("Unincorporated",areas$place),1,0)
 areas <- areas %>% arrange(locid, place) %>%
   mutate(county = paste0(county, " County"),
@@ -148,8 +151,8 @@ sdopop$vr <-  format(round(sdopop$vr,2), nsmall=2)
 
 sdopop2 <- sdopop %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
 sdopop3 <- unique(sdopop2) %>%  spread(vartype, val)
+sdopop3 <- sdopop3[,c(1:4,6,7,5,8:15)]
 
-sdopop3 <- sdopop3[,c(1:4,6,7,5,8:14)]
 
 #setting variable values
 sdopop3$popname <- ifelse(sdopop3$popname == "tp","Total Population",
@@ -163,6 +166,7 @@ sdopop3$popname <- factor(sdopop3$popname, levels = c("Total Population", "Group
                                                       "Household Population", "Persons Per Household",
                                                       "Total Housing Units", "Occupied Housing Units",
                                                       "Vacant Housing Units","Vacancy Rate"))
+
 # cpopdata
 
 cpop1 <- cpopdata[,c(3,1,2,5,6)]

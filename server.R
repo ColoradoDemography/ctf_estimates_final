@@ -1,57 +1,67 @@
 
+# Revision to CTF program Adam Bickford June 2019
+# There are many changes, including updates to tidyverse,
+# addition of code to read data from the postgres database,
+# and update of the data processing steps to read the new
+# data tables.
+
+# This file does the table processing...
+
 library(knitr)
 library(kableExtra)
 source("setup.R")
 
-pop_tab <- function(inmat,capstr) {
+
+
+pop_tab <- function(indata,capstr) {
+
 #Kable population table
-  popname <- c("Variable", "2010 Census", "2010 Adj. Census", "July 2010", 
-               "July 2011", "July 2012", "July 2013", "July 2014", "July 2015", "July 2016", "July 2017", "July 2018")
+  popname <- names(indata)
+  inmat <- as.matrix(indata)
+  
+#Creating Column Names  
+  popname[1] <- "Variable"
+  popname[2] <- "2010 Census"
+  popname[3] <- "2010 Adj. Census"
+  popname[4:length(popname)] <- sapply(popname[4:length(popname)], function(x) paste0("July ",x))
+  
+  
   outtab <- inmat %>%
   kable(format='html',
         row.names=FALSE,
-        align='lrrrrrrrrrr',
+        align= c("l",rep("r",ncol(indata)-1)),
         col.names = popname,
         caption = capstr,
         escape = FALSE)  %>%
     kable_styling() %>%
     row_spec(0, align = "c") %>%
     column_spec(1, width="2in") %>%
-    column_spec(2, width="0.5in") %>%
-    column_spec(3, width="0.5in") %>%
-    column_spec(4, width="0.5in") %>%
-    column_spec(5, width="0.5in") %>%
-    column_spec(6, width="0.5in") %>%
-    column_spec(7, width="0.5in") %>%
-    column_spec(8, width="0.5in") %>%
-    column_spec(9, width="0.5in") %>%
-    column_spec(10, width="0.5in") %>%
-    column_spec(11, width="0.5in")
+    column_spec(2:ncol(indata), width="0.5in") 
+    
  return(outtab)
 }
 
-bp_tab <- function(inmat,capstr){
-  #kable housing table
-  housename <- c("Variable", "2010 to 2011", "2011 to 2012", "2012 to 2013", "2013 to 2014", "2014 to 2015", 
-                 "2015 to 2016","2016 to 2017", "2017 to 2018")
+bp_tab <- function(indata,capstr){
+  housename <- names(indata)
+  inmat <- as.matrix(indata)
+  
+ 
+  #Creating Column Names
+  housename[1] <- "Variable"
+  housename[2:length(housename)] <- sapply(housename[2:length(housename)], function(x) paste0(as.numeric(x)-1," to ",as.numeric(x)))
   
   outtab <- inmat %>%
     kable(format='html',
           row.names=FALSE,
-          align='lrrrrrrrr',
+          align=c("l",rep("r",ncol(indata)-1)),
           col.names = housename,
           caption = capstr,
           escape = FALSE)  %>%
     kable_styling() %>%
     row_spec(0, align = "c") %>%
     column_spec(1, width="3.5in") %>%
-    column_spec(2, width="0.5in") %>%
-    column_spec(3, width="0.5in") %>%
-    column_spec(4, width="0.5in") %>%
-    column_spec(5, width="0.5in") %>%
-    column_spec(6, width="0.5in") %>%
-    column_spec(7, width="0.5in") %>%
-    column_spec(8, width="0.5in") 
+    column_spec(2:ncol(indata), width="0.5in") 
+    
   return(outtab)
 }
 
@@ -59,23 +69,25 @@ bp_tab <- function(inmat,capstr){
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
 
-  m.sdopop <- as.matrix(sdopop[c(6,1,2,4,5,3,7,8),4:14])
-  m.cpop <- as.matrix(cpop[,4:14])
-  m.sdobp <- as.matrix(sdobp[,c(4,6:12)])
-  m.cbp <- as.matrix(cbp[c(2,1),c(4,6:12)])
+  m.sdopop <- sdopop[c(6,1,2,4,5,3,7,8),4:ncol(sdopop)]
+  m.cpop <- cpop[,4:ncol(cpop)]
+  m.sdobp <- sdobp[,c(4,6:ncol(sdobp))]
+  m.cbp <- cbp[c(2,1),c(4,6:ncol(cbp))]
   
   sdopoptab <-  pop_tab(m.sdopop,"State Demography Office Population Estimates")
-  cpoptab <- pop_tab(m.cpop,"U.S. Census Bureau Population Estimates")
+ # cpoptab <- pop_tab(m.cpop,"U.S. Census Bureau Population Estimates")
   
   sdobptab <-  bp_tab(m.sdobp,"State Demography Office  Housing Estimates")
   cbptab <- bp_tab(m.cbp,"U.S. Census Bureau Housing Estimates")
   
-  outtab <- rbind(sdopoptab,cpoptab,sdobptab,cbptab)
+  outtab <- rbind(sdopoptab,sdobptab,cbptab)
+# outtab <- rbind(sdopoptab,cpoptab,sdobptab,cbptab)  
   return(outtab)
 }
 
 tab_process <- function(plnum,ctymat,sdopop,censpop,sdobp,censbp) {
   #Function to process output tables data, retuns tabPanels for display
+ 
   if(plnum == "99990")  { # Unincoprorated area
     idval <- paste0(ctymat[1,1],plnum)
     sdopop <- subset(sdopop, id %in% idval)
@@ -133,7 +145,7 @@ function(input, output, session) {
   selPlace <- selPlace[order(selPlace$county),]
   plnum <- selPlace[1,5]
   ctyMat <- as.matrix(selPlace[,c(4,3)])
- 
+
    pop_tabl <- tab_process(plnum,ctyMat,sdopop3,cpop3,sdobp3,cbp3)
    output$sdo=renderUI({do.call(tabsetPanel,pop_tabl)}) 
   })
