@@ -151,7 +151,7 @@ sdopop$vr <-  format(round(sdopop$vr,2), nsmall=2)
 
 sdopop2 <- sdopop %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
 sdopop3 <- unique(sdopop2) %>%  spread(vartype, val)
-sdopop3 <- sdopop3[,c(1:4,6,7,5,8:15)]
+sdopop3 <- sdopop3[,c(1:4,6,7,5,8:ncol(sdopop3))]
 
 
 #setting variable values
