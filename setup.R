@@ -85,7 +85,7 @@ sumpop <- cpopmulti %>% group_by(placefips,vartype) %>%
           summarize(censuspop = sum(censuspop)) 
 sumpop$countyfips <- "999"
 sumpop$id <- ""
-sumpop$year <- as.numeric(0)
+sumpop$year <- "0"
 sumpop <- sumpop[,c(4,1,5,6,2,3)]
 
 # cpopdata contiains the census population
