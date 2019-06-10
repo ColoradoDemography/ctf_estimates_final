@@ -174,7 +174,7 @@ cpop1$censuspop <- formatC(cpop1$censuspop, format="d", big.mark=",")
 
 cpop2 <- cpop1 %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) 
 cpop3 <- unique(cpop2) %>%  spread(vartype, val)
-cpop3 <- cpop3[,c(1:4,6,7,5,8:14)]
+cpop3 <- cpop3[,c(1:4,6,7,5,8:ncol(cpop3))]
 cpop3$id <- paste0(cpop3$countyfips,cpop3$placefips)
 cpop3$popname <- "Total Population"
 
