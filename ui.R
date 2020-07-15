@@ -1,4 +1,4 @@
-library(plotly)
+
 library(shiny)
 
 source("setup.R")  

@@ -8,15 +8,18 @@
 # Save the processing for a function in server.R
 
 rm(list=ls())
+#setwd("J:/Estimates/CTF Estimates R programs/CTF Website Programs")
 library(tidyverse)
+library(readr)
+library(stringr)
 library(knitr)
 library(kableExtra)
 library(RPostgreSQL)
 
+
 # Additions for Database pool  6/5/2019
 library('pool') 
 library('DBI')
-library('stringr')
 library('config')
 
 # Set up database pool 6/5/2019
@@ -35,15 +38,29 @@ DOLAPool <-  dbPool(
 #Read data from the Postgres database
 
 #Prepping SQL calls
-RCSSQL <- "SELECT * FROM data.ctf_rcs_names;"
-POPESTSQL <- "SELECT * FROM data.ctf_pop_est ORDER BY countyfips, vartype;"
-CONSTRSQL <- "SELECT * FROM data.ctf_construction ORDER BY countyfips, year;"
+# file documentaion in  J:\Estimates\CTF Estimates R programs\CTF File Documentation V2018.docx
+RCSSQL <- "SELECT * FROM data.ctf_rcs_names;"  # List of Location Names [place name] in [County]
+POPESTSQL <- "SELECT * FROM data.ctf_pop_est ORDER BY countyfips, vartype;"   # the Population.csv file...
+CONSTRSQL <- "SELECT * FROM data.ctf_construction ORDER BY countyfips, year;"  #Building Permit file..."
 
 
-# Read data files
-areas <- dbGetQuery(DOLAPool,RCSSQL)
-popdata <- dbGetQuery(DOLAPool,POPESTSQL)
-housedata <- dbGetQuery(DOLAPool, CONSTRSQL) 
+# Read data files  Production
+ areas <- dbGetQuery(DOLAPool,RCSSQL)  %>% arrange(place)
+ popdata <- dbGetQuery(DOLAPool,POPESTSQL)
+ housedata <- dbGetQuery(DOLAPool, CONSTRSQL) 
+
+#Read data Files Testing
+# areas <- read_csv("J:/Estimates/CTF Estimates R programs/ctf_rcs_names.csv") %>%
+#      mutate(countyfips = str_pad(countyfips,3,pad="0"),
+#             placefips = str_pad(placefips,5,pad="0"))
+
+# popdata <- read_csv("J:/Estimates/CTF Estimates R programs/ctf_pop_est.csv") %>%
+#  mutate(countyfips = str_pad(countyfips,3,pad="0"),
+#         placefips = str_pad(placefips,5,pad="0"))
+
+# housedata <-  read_csv("J:/Estimates/CTF Estimates R programs/ctf_construction.csv") %>%
+#  mutate(countyfips = str_pad(countyfips,3,pad="0"),
+#         placefips = str_pad(placefips,5,pad="0"))
 
 
 #closing the connections
@@ -70,12 +87,13 @@ sdohousedata <- housedata[,c(11,1:4,6:9)]
 
 
 #Extract census variables
-# removing county totals
+# removing county totals -- need to calculate multi...
+
 popdata2 <- popdata[which(popdata$placefips != "00000"),]
 cpop <- popdata2[,c(1,2,18,7,17,16)]
 
 # Census  Population  reconstructing totals
-cpop1 <- cpop[which(cpop$countyfips != "999"),] 
+cpop1 <- cpop[which(cpop$countyfips != "999"),] %>% mutate(year = as.character(year))
 cpop2 <- cpop[which(cpop$countyfips == "999"),] 
 uniqmulti <- unique(cpop2$placefips)
 
@@ -93,20 +111,20 @@ cpopdata <- bind_rows(cpop1,sumpop)
 
 
 #SDO Housing data
-sdohousmulti <- subset(sdohousedata,placefips %in% uniqmulti)
-sdohousmulti <- sdohousmulti[which(sdohousmulti$countyfips != "999"),]
-sumhouse <- sdohousmulti %>% group_by(placefips,year) %>% 
-  summarize(localbp = sum(localbp),
-            localdemo = sum(localdemo),
-            localco = sum(localco),
-            localmhc = sum(localmhc)
-            ) 
-sumhouse$countyfips <- "999"
-sumhouse$id <- ""
-sumhouse$areaname <- ""
+#sdohousmulti <- subset(sdohousedata,placefips %in% uniqmulti)
+#sdohousmulti <- sdohousmulti[which(sdohousmulti$countyfips != "999"),]  
+#sumhouse <- sdohousmulti %>% group_by(placefips,year) %>% 
+#  summarize(localbp = sum(localbp),
+#            localdemo = sum(localdemo),
+#            localco = sum(localco),
+#            localmhc = sum(localmhc)
+#            ) 
+#sumhouse$countyfips <- "999"
+#sumhouse$id <- ""
+#sumhouse$areaname <- ""
 
-sumhouse <- sumhouse[,c(8,7,1,9,2:6)]
-sdohousedata <- bind_rows(sdohousedata,sumhouse)
+
+#sdohousedata <- bind_rows(sdohousedata,sumhouse)
 
 # census Housing data
 
@@ -116,16 +134,17 @@ chouse <- housedata2[,c(1,2,11,4,5,10)]
 
 # extracting multi-county places and summarizing
 
-chousemulti <- subset(chouse, placefips %in% uniqmulti)  # this is the list of contains the multi county places for summarization
+#chousemulti <- subset(chouse, placefips %in% uniqmulti)  # this is the list of contains the multi county places for summarization
 
-sumhouse <- chousemulti %>% group_by(placefips,year) %>% 
-  summarize(censusbp = sum(censusbp),
-            censushu = sum(censushu)) 
-sumhouse$countyfips <- "999"
-sumhouse$id <- ""
-sumhouse <- sumhouse[,c(5,1,6,2:4)]
+#sumhouse <- chousemulti %>% group_by(placefips,year) %>% 
+#  summarize(censusbp = sum(censusbp),
+#            censushu = sum(censushu)) 
+#sumhouse$countyfips <- "999"
+#sumhouse$id <- ""
+#sumhouse <- sumhouse[,c(5,1,6,2:4)]
 
-chousedata <- bind_rows(chouse,sumhouse)
+#chousedata <- bind_rows(chouse,sumhouse)
+chousedata <- chouse
 
 # Now have 4 data sets:
 # 1) sdopopdata: SDO population estimates, long key vars: countyfips, placefips vartype
@@ -199,13 +218,34 @@ sdobp3$popname <- factor(sdobp3$popname, levels = c("Local Building Permits","Lo
 
 
 # Census Housing
- cbp <- chousedata[,c(3,1,2,4:6)]
+ cbp <- chousedata[,c(3,1,2,4:6)] 
  cbp$id <- paste0(cbp$countyfips,cbp$placefips)
- cbp$censushu <- formatC(cbp$censushu, format="d", big.mark=",")
- cbp$censusbp <- formatC(cbp$censusbp, format="d", big.mark=",")
+ 
  
  cbp2 <- cbp %>% gather(popname,val, -id, -countyfips, -placefips, -year) 
- cbp3 <- unique(cbp2) %>%  spread(year, val)
+ cbp2$val <- formatC(cbp2$val, format="d", big.mark=",")
+ cbp2a <- cbp2 %>% filter(popname == "censusbp") %>% filter(countyfips != "999")
+ cbp2b <- cbp2 %>% filter(popname == "censushu") %>% filter(countyfips != "999")
+ cbp2multia <- cbp2 %>% filter(popname == "censusbp") %>% filter(countyfips == "999") 
+ cbp2multib <- cbp2 %>% filter(popname == "censushu") %>% filter(countyfips == "999") 
+ 
+ 
+ cbp3a <- cbp2a %>% spread(year, val) 
+ cbp3b <- cbp2b %>% spread(year, val)   
+ 
+
+ cbp3multia <- cbp2multia %>%  group_by_at(vars(-val)) %>%  # group by everything other than the value column. 
+   mutate(row_id=1:n()) %>% ungroup() %>%  # build group index
+   spread(key=year, value=val)    # spread
+ 
+ 
+ cbp3multib<- cbp2multib %>%  group_by_at(vars(-val)) %>%  # group by everything other than the value column. 
+   mutate(row_id=1:n()) %>% ungroup() %>%  # build group index
+   spread(key=year, value=val)   
+ 
+ cbp3 <- bind_rows(cbp3a, cbp3b, cbp3multia, cbp3multib) %>% arrange(id, popname)
+ 
+ cbp3 <- cbp3 %>% select(-row_id)
  
  cbp3$popname <- ifelse(cbp3$popname == "censushu","Census Housing Units","Census Building Permits")
  cbp3$popname <- factor(cbp3$popname, levels=c("Census Housing Units","Census Building Permits"))
