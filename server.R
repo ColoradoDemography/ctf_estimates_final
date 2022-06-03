@@ -23,7 +23,9 @@ pop_tab <- function(indata,capstr) {
  # popname[2] <- "2010 Census"
 #  popname[3] <- "2010 Adj. Census"
   
-  popname[2:length(popname)] <- sapply(popname[2:length(popname)], function(x) paste0("July ",x))
+  popname[2] <- paste0("April ", popname[2])
+  popname[3] <- paste0("April ", popnamer[3])
+   
   
   
   outtab <- inmat %>%
@@ -49,10 +51,10 @@ bp_tab <- function(indata,capstr){
  
   #Creating Column Names
   housename[1] <- "Variable"
-  housename[2] <- sub("July","April",housename[2])
+  housename[2] <- "April 2020 to July 2020"
+  housename[3] <- "2020 to 2021"
   
-  housename[2:length(housename)] <- sapply(housename[2:length(housename)], function(x) paste0(as.numeric(x)-1," to ",as.numeric(x)))
-  
+
   outtab <- inmat %>%
     kable(format='html',
           row.names=FALSE,
