@@ -3,6 +3,8 @@
 <!-- CTF Estimates Draft Review Page A Bickford 5/2022 -->
 
 <head>
+{{ headContent() }}
+    {{ bootstrapLib() }}
 <title>SDO Draft Population Estimate Review Page</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +14,7 @@
 <!-- SDO CSS -->
 <link type="text/css" rel="stylesheet" href="./css/common.css" async=""> 
 <!-- SDO suport functions, genSYA, insertHTML, -->
-<script src="../www/funct.js"></script>
+<script src="/www/funct.js"></script>
 </head>
 <body>
 <div class="alert__bar--covid-19" style="text-color:black;font-size:12px;">
@@ -23,11 +25,11 @@
 <div>
 <a href="https://cdola.colorado.gov/"><img class="logoSDO" src="./img/SDO-1600x400.jpg" alt="Department of Local Affairs Homepage"></a>
 </div>
-<div w3-include-html="../www/html/navheader.html"></div>
+<div w3-include-html="/www/html/navheader.html"></div>
 <!-- First Grid, linked images -->
 <div class="grid-container2">
   <div class="grid-item panel2_1_1">
-	<div w3-include-html="../www/html/sdotitle.html"></div>
+	<div w3-include-html="/www/html/sdotitle.html"></div>
   </div>
   <div class="grid-item panel2_2_1" id="leftHand">
 	<div w3-include-html="../www/html/left_hand_index.html"></div>
@@ -57,13 +59,13 @@
 </div> <!-- app -->
 
  <div class="grid-item panel2_4_2">
-		<div w3-include-html="../www/html/bodycontent1.html"></div>
+		<div w3-include-html="/www/html/bodycontent1.html"></div>
 </div>
 	<div class="grid-item panel2_4_4">
-		<div w3-include-html="../www/html/bodycontent2.html"></div>
+		<div w3-include-html="/www/html/bodycontent2.html"></div>
 </div>
 <div class="grid-item panel2_4_6">
-	<div w3-include-html="../www/html/bodycontent3.html"></div>
+	<div w3-include-html="/www/html/bodycontent3.html"></div>
 </div>
 </div>  <!-- End of Grid -->
  <script>
