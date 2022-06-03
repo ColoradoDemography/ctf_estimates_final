@@ -4,7 +4,7 @@
 
 <head>
 {{ headContent() }}
-    {{ bootstrapLib() }}
+{{ bootstrapLib() }}
 <title>SDO Draft Population Estimate Review Page</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,8 +13,6 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
 <!-- SDO CSS -->
 <link type="text/css" rel="stylesheet" href="./css/common.css" async=""> 
-<!-- SDO suport functions, genSYA, insertHTML, -->
-<script src="./funct.js"></script>
 </head>
 <body>
 <div class="alert__bar--covid-19" style="text-color:black;font-size:12px;">
@@ -71,7 +69,34 @@
  <script>
 
 //Setting HTML include and Accordion
-includeHTML(); 
+//includeHTML  taken from W3  https://www.w3schools.com/howto/howto_html_include.asp
+function includeHTML() {
+  var z, i, elmnt, file, xhttp;
+  /* Loop through a collection of all HTML elements: */
+  z = document.getElementsByTagName("*");
+  
+  for (i = 0; i < z.length; i++) {
+    elmnt = z[i];
+    /*search for elements with a certain atrribute:*/
+    file = elmnt.getAttribute("w3-include-html");
+    if (file) {
+      /* Make an HTTP request using the attribute value as the file name: */
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4) {
+          if (this.status == 200) {elmnt.innerHTML = this.responseText;}
+          if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
+          /* Remove the attribute, and call this function once more: */
+          elmnt.removeAttribute("w3-include-html");
+          includeHTML();
+        }
+      }
+      xhttp.open("GET", file, true);
+      xhttp.send();
+      /* Exit the function: */
+      return;
+    }
+  }
 
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
