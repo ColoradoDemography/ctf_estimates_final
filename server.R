@@ -12,17 +12,17 @@ library(kableExtra)
 source("setup.R")
 
 
-
 pop_tab <- function(indata,capstr) {
 
 #Kable population table
   popname <- names(indata)
   inmat <- as.matrix(indata)
-  
+
 #Creating Column Names  2020:  Modify this to account for removal of 2010 Census and 2010 Adj. Census
  popname[1] <- "Variable"
  # popname[2] <- "2010 Census"
 #  popname[3] <- "2010 Adj. Census"
+  
   popname[2:length(popname)] <- sapply(popname[2:length(popname)], function(x) paste0("July ",x))
   
   
@@ -42,6 +42,7 @@ pop_tab <- function(indata,capstr) {
 }
 
 bp_tab <- function(indata,capstr){
+  
   housename <- names(indata)
   inmat <- as.matrix(indata)
 
@@ -69,13 +70,19 @@ bp_tab <- function(indata,capstr){
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
 # Modify these to account for 2010 to 2019 data
+
+
+  m.sdopop <- sdopop[c(6,1,2,4,5,3,7,8),c(4,5,6)]  # Change the column selection to reflect the correct years...
+  m.cpop <- cpop[1,c(4,5,6)]
+  m.sdobp <- sdobp[,c(4,5,6)]  
+  m.cbp <- cbp[c(2,1),c(4,5,6)]  
+
+  m.sdopop[,2:3] <- sapply(m.sdopop[,2:3], function(x) gsub("NA","",x))
+  m.cpop[,2:3] <- sapply(m.cpop[,2:3], function(x) gsub("NA","",x))
+  m.sdobp[,2:3] <- sapply(m.sdobp[,2:3], function(x) gsub("NA","",x))
+  m.cbp[,2:3] <- sapply(m.cbp[,2:3], function(x) gsub("NA","",x))
   
 
-  m.sdopop <- sdopop[c(6,1,2,4,5,3,7,8),c(4,7,5,6,8:ncol(sdopop))]  # Change the column selection to reflect the correct years...
-  m.cpop <- cpop[,c(4,7,5,6,8:ncol(cpop))]
-  m.sdobp <- sdobp[,c(4:ncol(sdobp))]
-  m.cbp <- cbp[c(2,1),4:ncol(cbp)]
-  
   sdopoptab <-  pop_tab(m.sdopop,"State Demography Office Population Estimates")
   cpoptab <- pop_tab(m.cpop,"U.S. Census Bureau Population Estimates")
   
@@ -90,51 +97,49 @@ tab_proc <- function(sdopop,cpop,sdobp,cbp) {
 tab_process <- function(plnum,ctymat,sdopop,censpop,sdobp,censbp) {
   #Function to process output tables data, retuns tabPanels for display
 
-  
-
   if(plnum == "99990")  { # Unincoprorated area
     idval <- paste0(ctymat[1,1],plnum)
     sdopop <- subset(sdopop, id %in% idval)
     cpop <- subset(censpop, id %in% idval)
     sdobp <- subset(sdobp, id %in% idval)
     cbp <-  subset(censbp, id %in% idval)
-    }  else {
+  }  else {
     sdopop <- subset(sdopop, placefips %in% plnum)
     cpop <- subset(censpop, placefips %in% plnum)
     sdobp <- subset(sdobp, placefips %in% plnum)
     cbp <- subset(censbp,  placefips %in% plnum)
-    }
-# if single county or multiple county   
- if(nrow(sdopop) == 8) { # Single county Municipality
+  }
+  # if single county or multiple county   
+  if(nrow(sdopop) == 8) { # Single county Municipality
     outtab <- tab_proc(sdopop,cpop,sdobp,cbp) 
     outlist <- list(tabPanel(ctymat[1,2],HTML(outtab)))
-   return(outlist)
- } else { # multicounty cities
-   ctynames <- matrix(nrow=nrow(sdopop)/8)
-   
-   #Generating total
-   sdopop2 <- subset(sdopop, countyfips == "999")
-   cpop2 <- subset(cpop, countyfips == "999")
-   sdobp2 <- subset(sdobp, countyfips == "999")
-   cbp2 <- subset(cbp, countyfips == "999")
-   
-   ctynames[1] = "Total"
-   outtab <- tab_proc(sdopop2,cpop2,sdobp2,cbp2)
-   outlist <- list(outtab)
-   for(i in 1:nrow(ctymat)) {
-     ctynames[i+1] = ctymat[i,2]
-     sdopop2 <- subset(sdopop, countyfips == ctymat[i,1])
-     cpop2 <- subset(cpop, countyfips == ctymat[i,1])
-     sdobp2 <- subset(sdobp, countyfips == ctymat[i,1])
-     cbp2 <- subset(cbp, countyfips == ctymat[i,1])  
-     outtab <- tab_proc(sdopop2,cpop2,sdobp2,cbp2)
-     outlist[[i+1]] <- outtab
-   } # for
-   tablist <- lapply(1:nrow(ctynames), function(i) {
-     tabPanel(ctynames[i],HTML(outlist[[i]]))
-   })
-   return(tablist)   
-   } # multicounty cities
+    return(outlist)
+  } else { # multicounty cities
+    ctynames <- matrix(nrow=nrow(sdopop)/8)
+    
+    #Generating total
+    sdopop2 <- subset(sdopop, countyfips == "999")
+    cpop2 <- subset(cpop, countyfips == "999")
+    sdobp2 <- subset(sdobp, countyfips == "999")
+    cbp2 <- subset(cbp, countyfips == "999")
+    
+    ctynames[1] = "Total"
+    outtab <- tab_proc(sdopop2,cpop2,sdobp2,cbp2)
+    outlist <- list(outtab)
+    for(i in 1:nrow(ctymat)) {
+      ctynames[i+1] = ctymat[i,2]
+      sdopop2 <- subset(sdopop, countyfips == ctymat[i,1])
+      cpop2 <- subset(cpop, countyfips == ctymat[i,1])
+      sdobp2 <- subset(sdobp, countyfips == ctymat[i,1])
+      cbp2 <- subset(cbp, countyfips == ctymat[i,1])  
+      outtab <- tab_proc(sdopop2,cpop2,sdobp2,cbp2)
+      outlist[[i+1]] <- outtab
+    } # for
+    tablist <- lapply(1:nrow(ctynames), function(i) {
+      tabPanel(ctynames[i],HTML(outlist[[i]]))
+    })
+    return(tablist)   
+  } # multicounty cities
 
 }
 
@@ -145,10 +150,10 @@ function(input, output, session) {
   plName <- as.character(isolate(plNm()))
 
   # Selecting area records
-  selPlace <-  areas[which(areas$place == plName),]
-  selPlace <- selPlace[order(selPlace$county),]
+  selPlace <-  areas %>% filter(place == plName) %>% arrange(county)
+  
   plnum <- selPlace[1,5]
-  ctyMat <- as.matrix(selPlace[,c(4,3)])
+  ctyMat <- as.matrix(selPlace[,c(4,3)])  
 
    pop_tabl <- tab_process(plnum,ctyMat,sdopop3,cpop3,sdobp3,cbp3)
    output$sdo=renderUI({do.call(tabsetPanel,pop_tabl)}) 
