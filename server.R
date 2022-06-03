@@ -49,6 +49,8 @@ bp_tab <- function(indata,capstr){
  
   #Creating Column Names
   housename[1] <- "Variable"
+  housename[2] <- sub("July ","April ",housename[2])
+  
   housename[2:length(housename)] <- sapply(housename[2:length(housename)], function(x) paste0(as.numeric(x)-1," to ",as.numeric(x)))
   
   outtab <- inmat %>%
