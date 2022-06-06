@@ -23,8 +23,8 @@ pop_tab <- function(indata,capstr) {
  # popname[2] <- "2010 Census"
 #  popname[3] <- "2010 Adj. Census"
   
-  popname[2] <- paste0("April ", popname[2])
-  popname[3] <- paste0("April ", popname[3])
+  popname[2] <- paste0("July ", popname[2])
+  popname[3] <- paste0("July ", popname[3])
    
   
   
