@@ -38,7 +38,7 @@ DOLAPool <-  dbPool(
 #Read data from the Postgres database
 
 #Prepping SQL calls
-# file documentaion in  J:\Estimates\CTF Estimates R programs\CTF File Documentation V2018.docx
+# file documentation in  J:\Estimates\CTF Estimates R programs\CTF File Documentation V2018.docx
 RCSSQL <- "SELECT * FROM data.ctf_rcs_names;"  # List of Location Names [place name] in [County]
 POPESTSQL <- "SELECT * FROM data.ctf_pop_est ORDER BY countyfips, vartype;"   # the Population.csv file...
 CONSTRSQL <- "SELECT * FROM data.ctf_construction ORDER BY countyfips, year;"  #Building Permit file..."
@@ -78,23 +78,23 @@ areas <- areas %>%
 
 
 
-# Population Estimates data file
+# Population Estimates data file ctf_pop_est
 
 sdopopdata <- popdata %>% 
         select(id, countyfips, placefips, multicountyplaceflag, munitotalflag, 
                adjustmentarea, areaname, year, vartype, groupquarters, 
-               hp, ohu, pph, thu, tp, vhu, vr)
+               hp, thu, tp, hpthuratio)
 
 
-# Building permit data files
+# Building permit data files ctf_construction
 
 sdohousedata <- housedata %>% mutate(id = paste0(countyfips,placefips)) %>%
-  select(id, countyfips, placefips, areaname, year, localbp, localdemo, localco, localmhc)
+  select(id, countyfips, placefips, areaname, year, localbp, localdemo, localco)
 
 
 
 
-#Extract census variables
+#Extract census variables ctf_pop_est
 # removing county totals -- need to calculate multi...
 
 popdata2 <- popdata %>% filter(placefips != "00000")
@@ -139,7 +139,7 @@ cpopdata <- bind_rows(cpop1,sumpop)
 
 # census Housing data
 
-# removing county totals
+# removing county totals ctf_construction
 housedata2 <- housedata %>%
          filter(placefips != "00000") %>%
          select(countyfips, placefips, id, year, censusbp, censushu)
@@ -165,40 +165,34 @@ chousedata <- chouse
 # 3) sdohousedata:  SDO building permit/housing estimates, long key vars: countyfips, placefips year
 # 4) chousedata:  Census building permit/housing estimates, long key vars: countyfips, placefips year
 
-# Creating wide SDo Population data set
+# Creating wide SDO Population data set
+
 
 sdopop <- sdopopdata %>% select(id, countyfips, placefips, vartype, tp, groupquarters, hp, 
-                                pph, thu, ohu, vhu, vr) %>%
+                                thu, hpthuratio) %>%
           mutate(tp =  formatC(tp, format="d", big.mark=","),
                 groupquarters =  formatC(groupquarters, format="d", big.mark=","),
                 hp =  formatC(hp, format="d", big.mark=","),
-                pph =  format(round(pph,2), nsmall=2),
                 thu =  formatC(thu, format="d", big.mark=","),
-                ohu =  formatC(ohu, format="d", big.mark=","),
-                vhu =  formatC(vhu, format="d", big.mark=","),
-                vr =  format(round(vr,2), nsmall=2)
+                hpthuratio =  format(round(hpthuratio,2), nsmall=2)
           )
 
 sdopop2 <- sdopop %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
 sdopop3 <- unique(sdopop2) %>%  spread(vartype, val) 
 
 
-#setting variable values
+#setting variable values Need to update 
 sdopop3$popname <- ifelse(sdopop3$popname == "tp","Total Population",
                    ifelse(sdopop3$popname == "groupquarters","Group Quarters Population",
                    ifelse(sdopop3$popname == "hp","Household Population",
-                   ifelse(sdopop3$popname == "pph","Persons Per Household",
-                   ifelse(sdopop3$popname == "thu","Total Housing Units",
-                   ifelse(sdopop3$popname == "ohu","Occupied Housing Units",
-                   ifelse(sdopop3$popname == "vhu","Vacant Housing Units","Vacancy Rate")))))))
+                   ifelse(sdopop3$popname == "thu","Total Housing Units","Household Population to Total Housing Units Ratio"))))
 sdopop3$popname <- factor(sdopop3$popname, levels = c("Total Population", "Group Quarters Population",
-                                                      "Household Population", "Persons Per Household",
-                                                      "Total Housing Units", "Occupied Housing Units",
-                                                      "Vacant Housing Units","Vacancy Rate"))
+                                                      "Household Population", "Total Housing Units", 
+                                                      "Household Population to Total Housing Units Ratio"))
 
 
 
-# cpopdata
+# cpopdata 
 
 cpop1 <- cpopdata %>% mutate(censuspop = formatC(censuspop, format="d", big.mark=",")) %>%
        select(countyfips, placefips, id, year, vartype, censuspop)
@@ -210,29 +204,30 @@ cpop3 <- unique(cpop2) %>%  spread(vartype, val)
 cpop3$popname <- "Total Population"
 
 
-#SDO Housing
-sdobp <- sdohousedata %>% select(id, countyfips, placefips,  year, localbp, localdemo, localco, localmhc)
+#SDO Housing   
+
+sdobp <- sdohousedata %>% select(id, countyfips, placefips,  year, localbp, localdemo, localco)
 
 
 sdobp$id <- paste0(sdobp$countyfips,sdobp$placefips)
 sdobp$localbp <- formatC(sdobp$localbp, format="d", big.mark=",")
 sdobp$localdemo <- formatC(sdobp$localdemo, format="d", big.mark=",")
 sdobp$localco <- formatC(sdobp$localco, format="d", big.mark=",")
-sdobp$localmhc <- formatC(sdobp$localmhc, format="d", big.mark=",")
+
 
 sdobp2 <- sdobp %>% gather(popname,val, -id, -countyfips, -placefips, -year) %>% filter(placefips != "00000") 
 sdobp3 <- unique(sdobp2) %>%  spread(year, val)
 
 
-sdobp3$popname <- ifelse(sdobp3$popname == "localbp","Local Building Permits",
+sdobp3$popname <- ifelse(sdobp3$popname == "localbp","Local Building Permits (issued six months prior to date)",
                   ifelse(sdobp3$popname == "localdemo","Local Demolition Permits",
                   ifelse(sdobp3$popname == "localco","Local Certificates of Occupancy","Local Mobile Home Change")))
 
-sdobp3$popname <- factor(sdobp3$popname, levels = c("Local Building Permits","Local Certificates of Occupancy",
+sdobp3$popname <- factor(sdobp3$popname, levels = c("Local Building Permits (issued six months prior to date)","Local Certificates of Occupancy",
                          "Local Demolition Permits", "Local Mobile Home Change"))
 
 
-# Census Housing
+# Census Housing  
  cbp <- chousedata %>% select(id, countyfips, placefips, year, censusbp, censushu)
  cbp$id <- paste0(cbp$countyfips,cbp$placefips)
  
@@ -262,7 +257,7 @@ sdobp3$popname <- factor(sdobp3$popname, levels = c("Local Building Permits","Lo
  
  cbp3 <- cbp3 %>% select(-row_id)
  
- cbp3$popname <- ifelse(cbp3$popname == "censushu","Census Housing Units","Census Building Permits")
- cbp3$popname <- factor(cbp3$popname, levels=c("Census Housing Units","Census Building Permits"))
+ cbp3$popname <- ifelse(cbp3$popname == "censushu","Census Housing Units","Census Building Permits (issued six months prior to date)")
+ cbp3$popname <- factor(cbp3$popname, levels=c("Census Housing Units","Census Building Permits (issued six months prior to date)"))
  
  
