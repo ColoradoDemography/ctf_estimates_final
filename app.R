@@ -1,5 +1,5 @@
 #' Conservation Trust Fund Redesign
-#' @author  Adam Bickford, Colorado State Demography Office, May-June 2018
+#' @author  Adam Bickford, Colorado State Demography Office, June 2023
 
 rm(list = ls())
 library(tidyverse, quietly=TRUE)
@@ -28,7 +28,7 @@ year because of the updated census migration estimate data.</p>"
 
 ui <- fluidPage(
     tags$link(rel = "stylesheet", type = "text/css", href = "www/common.css"),  #Link to CSS...
-    titlePanel("Draft Conservation Trust Find Population Estimates for Calendar Year 2022"),
+    titlePanel("Draft Conservation Trust Find Population Estimates for Calendar Vintage 2023"),
     tags$html(desc_text),
     
                  ) # dashboardPage/ui

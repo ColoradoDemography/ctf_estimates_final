@@ -49,6 +49,8 @@ CONSTRSQL <- "SELECT * FROM data.ctf_construction ORDER BY countyfips, year;"  #
  popdata <- dbGetQuery(DOLAPool,POPESTSQL) %>% mutate(id=paste0(countyfips,placefips))
  housedata <- dbGetQuery(DOLAPool, CONSTRSQL) %>% mutate(id=paste0(countyfips,placefips))
 
+ 
+
 #Read data Files Testing
 # areas <- read_csv("J:/Estimates/CTF Estimates R programs/ctf_rcs_names.csv") %>%
 #      mutate(countyfips = str_pad(countyfips,3,pad="0"),
@@ -79,12 +81,17 @@ areas <- areas %>%
 
 
 # Population Estimates data file ctf_pop_est
+#
+# sdopopdata <- popdata %>% 
+#        select(id, countyfips, placefips, multicountyplaceflag, munitotalflag, 
+#               adjustmentarea, areaname, year, vartype, groupquarters, 
+#               hp, thu, tp, hpthuratio)
+# 2023 Vintage
 
-sdopopdata <- popdata %>% 
+ sdopopdata <- popdata %>% 
         select(id, countyfips, placefips, multicountyplaceflag, munitotalflag, 
                adjustmentarea, areaname, year, vartype, groupquarters, 
-               hp, thu, tp, hpthuratio)
-
+               hp, thu, tp, ohu, pph, vhu, vr)
 
 # Building permit data files ctf_construction
 
@@ -169,12 +176,15 @@ chousedata <- chouse
 
 
 sdopop <- sdopopdata %>% select(id, countyfips, placefips, vartype, tp, groupquarters, hp, 
-                                thu, hpthuratio) %>%
+                                thu, tp, ohu, pph, vhu, vr) %>%
           mutate(tp =  formatC(tp, format="d", big.mark=","),
                 groupquarters =  formatC(groupquarters, format="d", big.mark=","),
                 hp =  formatC(hp, format="d", big.mark=","),
                 thu =  formatC(thu, format="d", big.mark=","),
-                hpthuratio =  format(round(hpthuratio,2), nsmall=2)
+                ohu	= formatC(ohu,format="d",big.mark=","),
+                pph	= format(pph,trim=TRUE),
+                vhu	= formatC(vhu,format="d",big.mark=","),
+                vr = format(vr,trim=TRUE)
           )
 
 sdopop2 <- sdopop %>% gather(popname,val, -id, -countyfips, -placefips, -vartype) %>% filter(placefips != "00000") 
@@ -185,10 +195,20 @@ sdopop3 <- unique(sdopop2) %>%  spread(vartype, val)
 sdopop3$popname <- ifelse(sdopop3$popname == "tp","Total Population",
                    ifelse(sdopop3$popname == "groupquarters","Group Quarters Population",
                    ifelse(sdopop3$popname == "hp","Household Population",
-                   ifelse(sdopop3$popname == "thu","Total Housing Units","Household Population to Total Housing Units Ratio"))))
-sdopop3$popname <- factor(sdopop3$popname, levels = c("Total Population", "Group Quarters Population",
-                                                      "Household Population", "Total Housing Units", 
-                                                      "Household Population to Total Housing Units Ratio"))
+                   ifelse(sdopop3$popname == "thu","Total Housing Units",
+                   ifelse(sdopop3$popname == "ohu","Occupied Housing Units",
+                   ifelse(sdopop3$popname =="pph", "Persons per Household",
+                   ifelse(sdopop3$popname == "vhu", "Vacant Housing Units", "Vacancy Rate")))))))
+                          
+                         
+sdopop3$popname <- factor(sdopop3$popname, levels = c("Total Population",
+                                                      "Group Quarters Population",
+                                                      "Household Population",
+                                                      "Total Housing Units",
+                                                      "Occupied Housing Units",
+                                                      "Vacant Housing Units",
+                                                      "Vacancy Rate",
+                                                      "Persons per Household"))
 
 
 

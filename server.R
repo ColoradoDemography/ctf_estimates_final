@@ -1,5 +1,5 @@
 
-# Revision to CTF program Adam Bickford June 2019
+# Revision to CTF program Adam Bickford June 2024
 # There are many changes, including updates to tidyverse,
 # addition of code to read data from the postgres database,
 # and update of the data processing steps to read the new
@@ -26,6 +26,7 @@ pop_tab <- function(indata,capstr) {
   popname[2] <- paste0("July ", popname[2])
   popname[3] <- paste0("July ", popname[3])
   popname[4] <- paste0("July ", popname[4])
+  popname[5] <- paste0("July ", popname[5])
    
   
   
@@ -55,6 +56,7 @@ bp_tab <- function(indata,capstr){
   housename[2] <- "April 2020 to July 2020"
   housename[3] <- "2020 to 2021"
   housename[4] <- "2021 to 2022"
+  housename[5] <- "2022 to 2023"
   
 
   outtab <- inmat %>%
@@ -76,17 +78,15 @@ bp_tab <- function(indata,capstr){
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
 
+  m.sdopop <- sdopop[c(6, 1, 2, 5, 3, 7, 8, 4),c(4,5,6,7,8)]  # Change the column selection to reflect the correct years...
+  m.cpop <- cpop[1,c(4,5,6,7,8)]
+  m.sdobp <- sdobp[,c(4,5,6,7,8)]  
+  m.cbp <- cbp[c(2,1),c(4,5,6,7,8)]  
 
-
-  m.sdopop <- sdopop[c(5,1,2,4,3),c(4,5,6,7)]  # Change the column selection to reflect the correct years...
-  m.cpop <- cpop[1,c(4,5,6,7)]
-  m.sdobp <- sdobp[,c(4,5,6,7)]  
-  m.cbp <- cbp[c(2,1),c(4,5,6,7)]  
-
-  m.sdopop[,2:4] <- sapply(m.sdopop[,2:4], function(x) gsub("NA","",x))
-  m.cpop[,2:4] <- sapply(m.cpop[,2:4], function(x) gsub("NA","",x))
-  m.sdobp[,2:4] <- sapply(m.sdobp[,2:4], function(x) gsub("NA","",x))
-  m.cbp[,2:4] <- sapply(m.cbp[,2:4], function(x) gsub("NA","",x))
+  m.sdopop[,2:5] <- sapply(m.sdopop[,2:5], function(x) gsub("NA","",x))
+  m.cpop[,2:5] <- sapply(m.cpop[,2:5], function(x) gsub("NA","",x))
+  m.sdobp[,2:5] <- sapply(m.sdobp[,2:5], function(x) gsub("NA","",x))
+  m.cbp[,2:5] <- sapply(m.cbp[,2:5], function(x) gsub("NA","",x))
   
 
   sdopoptab <-  pop_tab(m.sdopop,"State Demography Office Population Estimates")
@@ -103,6 +103,7 @@ tab_proc <- function(sdopop,cpop,sdobp,cbp) {
 tab_process <- function(plnum,ctymat,sdopop,censpop,sdobp,censbp) {
   #Function to process output tables data, retuns tabPanels for display
 
+ 
   if(plnum == "99990")  { # Unincoprorated area
     idval <- paste0(ctymat[1,1],plnum)
     sdopop <- subset(sdopop, id %in% idval)
@@ -116,13 +117,13 @@ tab_process <- function(plnum,ctymat,sdopop,censpop,sdobp,censbp) {
     cbp <- subset(censbp,  placefips %in% plnum)
   }
   # if single county or multiple county   
-  if(nrow(sdopop) == 5) { # Single county Municipality
+  if(nrow(sdopop) == 8) { # Single county Municipality
     outtab <- tab_proc(sdopop,cpop,sdobp,cbp) 
     outlist <- list(tabPanel(ctymat[1,2],HTML(outtab)))
     return(outlist)
   } else { # multicounty cities
 
-    ctynames <- matrix(nrow=nrow(sdopop)/5)
+    ctynames <- matrix(nrow=nrow(sdopop)/8)
     
     #Generating total
     sdopop2 <- subset(sdopop, countyfips == "999")
@@ -152,6 +153,7 @@ tab_process <- function(plnum,ctymat,sdopop,censpop,sdobp,censbp) {
 
 
 function(input, output, session) {
+
   observeEvent(input$area, {
   plNm <- reactive(input$area)
   plName <- as.character(isolate(plNm()))
