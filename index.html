@@ -1,31 +1,50 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<!-- CTF Estimates Draft Review Page A Bickford 6/2023 -->
-
+<html lang="en">
 <head>
-{{ headContent() }}
-{{ bootstrapLib() }}
-<title>SDO Draft Population Estimate Review Page</title>
+
+<title>Colorado State Demography Office Home Page</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- FONT AWESOME CSS  Source for buttons the list of icons is here: https://fontawesome.com/icons?d=gallery&p=2 -->
 <!-- angle-down, angle-double-down, angle-circle-down, angle-right, angle-circle-right, the new button is in common.css --> 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" crossorigin="anonymous">
 <!-- SDO CSS -->
-<link type="text/css" rel="stylesheet" href="./css/common.css" async=""> 
+<link type="text/css" rel="stylesheet" href="./www/common.css" async=""> 
+
+
+<!-- adding d3.js  for data manipulation-->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+ <!-- Adding Plotly.js for  charting -->
+
+<!-- Adding jquery and datatables for table production -->
+<script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+<script src="https://cdn.plot.ly/plotly-2.24.1.min.js" charset="utf-8"></script>
+ 
+<!-- SDO suport functions, genSYA, insertHTML, -->
+<script src="./assets/js/funct.js"></script>
+<!-- GoogleAnalytics Script -->
+<script defer src="./assets/js/googleAnalytics.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-W27DQ8VRCX"></script>
+
+<a href="#mainx" class="skip-main">Skip to main content</a>
 </head>
+
 <body>
 <div>
-<a href="https://cdola.colorado.gov/"><img class="logoSDO" src="./img/SDO-1600x400.jpg" alt="Department of Local Affairs Homepage"></a>
+
+<a href="https://demography.dola.colorado.gov/"><img class="logoSDO" src="./assets/img/SDO-1600x400.jpg" alt="Colorado Department of Local Affairs State Demography Office"></a>
 </div>
-<div w3-include-html="./html/navheader.html"></div>
+<div w3-include-html="./www/html//navheader.html"></div>
 <!-- First Grid, linked images -->
-<div class="grid-container2">
-  <div class="grid-item panel2_1_1">
-	<div w3-include-html="./html/sdotitle.html"></div>
+<div class="grid-container">
+  <div class="grid-item panel_1_1">
+		<h1 class='h1_style'>State Demography Office</h1>
+		<p> </p>
+		<div w3-include-html="./www/html//sdotitle.html"></div>  
   </div>
-  <div class="grid-item panel2_2_1" id="leftHand">
-	<div w3-include-html="./html/left_hand_index.html"></div>
+  <div class="grid-item panel_2_1" id="leftHand">
+	<div w3-include-html="./www/html//left_hand_index.html"></div>
+  </div>
   </div> <!-- Grid  panel2_2_1 -->
  <div class="grid-item app-panel_2_span">
 	<div id="main-content">
