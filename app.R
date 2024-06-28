@@ -27,7 +27,7 @@ The estimates for the prvious year will be different than the one released this
 year because of the updated census migration estimate data.</p>"
 
 ui <- fluidPage(
-    tags$link(rel = "stylesheet", type = "text/css", href = "www/common.css"),  #Link to CSS...
+    tags$link(rel = "stylesheet", type = "text/css", href = "./www/html/common.css"),  #Link to CSS...
     titlePanel("Draft Conservation Trust Find Population Estimates for Calendar Vintage 2023"),
     tags$html(desc_text),
     
