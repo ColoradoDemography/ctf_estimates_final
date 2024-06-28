@@ -1,72 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<!-- CTF Estimates Draft Review Page A Bickford 6/2023 -->
 
-<title>Colorado State Demography Office Home Page</title>
+<head>
+{{ headContent() }}
+{{ bootstrapLib() }}
+<title>SDO Draft Population Estimate Review Page</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- FONT AWESOME CSS  Source for buttons the list of icons is here: https://fontawesome.com/icons?d=gallery&p=2 -->
 <!-- angle-down, angle-double-down, angle-circle-down, angle-right, angle-circle-right, the new button is in common.css --> 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
 <!-- SDO CSS -->
-<link type="text/css" rel="stylesheet" href="www/css/common.css" async=""> 
-
-
-<!-- SDO suport functions, genSYA, insertHTML, -->
-<script src="www/funct.js"></script>
+<link type="text/css" rel="stylesheet" href="./css/common.css" async=""> 
 <!-- GoogleAnalytics Script -->
-<script defer src="www/googleAnalytics.js"></script>
+<script defer src="googleAnalytics.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W27DQ8VRCX"></script>
 
-<a href="#mainx" class="skip-main">Skip to main content</a>
 </head>
-
 <body>
 <div>
-
-<a href="https://demography.dola.colorado.gov/"><img class="logoSDO" src="www/img/SDO-1600x400.jpg" alt="Colorado Department of Local Affairs State Demography Office"></a>
+<a href="https://cdola.colorado.gov/"><img class="logoSDO" src="./img/SDO-1600x400.jpg" alt="Department of Local Affairs Homepage"></a>
 </div>
-<div w3-include-html="www/html/navheader.html"></div>
+<div w3-include-html="./html/navheader.html"></div>
 <!-- First Grid, linked images -->
-<div class="grid-container">
-  <div class="grid-item panel_1_1">
-		<h1 class='h1_style'>State Demography Office</h1>
-		<p> </p>
-		<div w3-include-html="www/html/sdotitle.html"></div>  
+<div class="grid-container2">
+  <div class="grid-item panel2_1_1">
+	<div w3-include-html="./html/sdotitle.html"></div>
   </div>
-  <div class="grid-item panel_2_1" id="leftHand">
-	<div w3-include-html="www/html/left_hand_index.html"></div>
-  </div>
+  <div class="grid-item panel2_2_1" id="leftHand">
+	<div w3-include-html="./html/left_hand_index.html"></div>
   </div> <!-- Grid  panel2_2_1 -->
  <div class="grid-item app-panel_2_span">
 	<div id="main-content">
-		  <h1>Draft July 1, 2023 Population Estimates</h1>
-		  <h2>Overview:</h2>
-		  <p class='crosstext'>
-		  The State Demography Office (SDO) within the Colorado Department of Local Affairs has prepared the July 1, 2023 draft population estimates. 
-		  The population estimates, once finalized, will be used for a variety of purposes including the distribution of Conservation Trust Fund (CTF) lottery funds to your jurisdiction.
-		  </p>
-		  <p class='crosstext'>
+		  <h1 class='h1_style'>Draft July 1, 20223 Population Estimates</h1>
+		  <h2 class='h2_style'>Overview:</h2>
+		  <p>
+			The State Demography Office (SDO) within the Colorado Department of Local Affairs has prepared the July 1, 2023 draft population estimates. 
+			The population estimates, once finalized, will be used for a variety of purposes including the distribution of Conservation Trust Fund (CTF) lottery funds to your jurisdiction.		  </p>
+		  <p>
 			The July 1, 2023 estimates are based on the April 1, 2020 Census, plus annual data on births, deaths, net migration, change in group quarters facilities, and housing unit change. 
 			The estimates for the previous year will be different than the one released this year because of updated data.
 		  </p>
-		  <p class='crosstext'>For an in depth explanation of the  methodology click <a href="https://drive.google.com/uc?export=download&id=1kVRfURwOhwNK5v33-8OANDIYL9O9UBKb" 
-			title='Link to Estimates Methodology' aria-link='Link to Estimates Methodology'>here.</a></p>
-		  <p class='crosstext'>For data on the components of change for counties, click <a href="https://drive.google.com/uc?export=download&id=17YqUPmc2JTwfjojL_pa3qDTs3PSLWg8U" target='_blank'
-			title='Vintage 2023 Componrents of Change Estimates' aria-link='Vintage 2023 Componrents of Change Estimates'>here.</a></p>  
-		  <h2>Review the draft population estimates:</h2>
-		  <p class='crosstext'>
-		  On this website, use the drop down menu to select your area. 
-		  To view data for your county's unincorporated areas, please scroll to the bottom of the list. 
+		  <p>
+		  For an in depth explanation of the  methodology click <a href="https://drive.google.com/uc?export=download&id=1kVRfURwOhwNK5v33-8OANDIYL9O9UBKb"
+		     title='SDO Estimates Methodology' aria-label='SDO Estimates Methodology'>here.</a>
+		  </p>
+		  <p>
+		  For data on the components of change for counties, click
+		  <a href='https://drive.google.com/uc?export=download&id=17YqUPmc2JTwfjojL_pa3qDTs3PSLWg8U' 
+		           title='County Components of Change' aria-label='County Components of Change'>here</a>
+          </p>
+		  <h2 class='h2_style'>Review the draft population estimates:</h2>
+		  <p>
+		  On this website, use the drop down menu to select your area. To view data for your county's unincorporated areas, please scroll to the bottom of the list. 
 		  Counties are alphabetized after the word "Unincorporated." Please review all of the variables for your community as they are used to create the population estimates.
 		  </p>
-		  <h3>Submitting Challenges</h3>
-		  <p class='crosstext'>
+		  <p></p>
+		  <h3 class='h3_style'>Submitting Challenges</h3>
+		  <p>
 			If you disagree with the numbers or question some of the input data, please let us know by Friday, July 26, 2024. 
 			Population challenges are most effective when a jurisdiction provides data more accurate than those currently informing SDO calculations. 
 			In the absence of such data, local governments are still encouraged to contact SDO to resolve any issues.
 		  </p>
-		  <p class='crosstext'>
+		  <p>
 		  Contact <a href="mailto:nancy.gedeon@state.co.us?subject=CTF%20Population%20Estimate">Nancy Gedeon</a> <i>(303-864-7755)</i> at the State Demography Office 
 		  with challenges, questions, or concerns about the population estimates by Friday, July 26, 2024.
 		  </p>
@@ -82,13 +79,13 @@
 </div> <!-- app -->
 
  <div class="grid-item panel2_4_2">
-		<div w3-include-html="www/html/bodycontent1.html"></div>
+		<div w3-include-html="./html/bodycontent1.html"></div>
 </div>
 	<div class="grid-item panel2_4_4">
-		<div w3-include-html="www/html/bodycontent2.html"></div>
+		<div w3-include-html="./html/bodycontent2.html"></div>
 </div>
 <div class="grid-item panel2_4_6">
-	<div w3-include-html="www/html/bodycontent3.html"></div>
+	<div w3-include-html="./html/bodycontent3.html"></div>
 </div>
 </div>  <!-- End of Grid -->
  <script>
