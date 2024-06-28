@@ -89,11 +89,11 @@ tab_proc <- function(sdopop,cpop,sdobp,cbp) {
   m.cbp[,2:5] <- sapply(m.cbp[,2:5], function(x) gsub("NA","",x))
   
 
-  sdopoptab <-  pop_tab(m.sdopop,"State Demography Office Population Estimates")
-  cpoptab <- pop_tab(m.cpop,"U.S. Census Bureau Population Estimates")
+  sdopoptab <-  pop_tab(m.sdopop,"<b><u>State Demography Office Population Estimates</u></b>")
+  cpoptab <- pop_tab(m.cpop,"<b><u>U.S. Census Bureau Population Estimates</u></b>")
   
-  sdobptab <-  bp_tab(m.sdobp,"State Demography Office  Housing Estimates")
-  cbptab <- bp_tab(m.cbp,"U.S. Census Bureau Housing Estimates")
+  sdobptab <-  bp_tab(m.sdobp,"<b><u>State Demography Office Housing Estimates</u></b>")
+  cbptab <- bp_tab(m.cbp,"<b><u>U.S. Census Bureau Housing Estimates</u></b>")
   
 #  outtab <- rbind(sdopoptab,sdobptab,cbptab)
   outtab <- rbind(sdopoptab,cpoptab,sdobptab,cbptab)  
