@@ -11,7 +11,7 @@ library(knitr)
 library(kableExtra)
 source("setup.R")
 
-
+# Pop Tab is State Demography Office Population Estimates and Census Population and Housing Estimates
 pop_tab <- function(indata,capstr) {
 
 #Kable population table
@@ -46,20 +46,21 @@ pop_tab <- function(indata,capstr) {
  return(outtab)
 }
 
+#bp_tab is the building permits Tab State Demography Office Building Permit Estimates
+# 
 bp_tab <- function(indata,capstr){
-  
+
   housename <- names(indata)
   inmat <- as.matrix(indata)
 
- 
+
   #Creating Column Names
   housename[1] <- "Variable"
-  housename[2] <- "April 2020 to July 2020"
-  housename[3] <- "2020 to 2021"
-  housename[4] <- "2021 to 2022"
-  housename[5] <- "2022 to 2023"
-  housename[6] <- "2023 to 2024"
-  
+  housename[2] <- "2020 to 2021"
+  housename[3] <- "2021 to 2022"
+  housename[4] <- "2022 to 2023"
+  housename[5] <- "2023 to 2024"
+ 
 
   outtab <- inmat %>%
     kable(format='html',
@@ -77,28 +78,28 @@ bp_tab <- function(indata,capstr){
 }
 
 
+
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
 
   m.sdopop <- sdopop[c(6, 1, 2, 5, 3, 7, 8, 4),c(4,5,6,7,8,9)]  # Change the column selection to reflect the correct years...
   m.cpop <- cpop[1,c(4,5,6,7,8,9)]
-  m.sdobp <- sdobp[,c(4,5,6,7,8,9)]  
+  m.sdobp <- sdobp[,c(4,6,7,8,9)]  
   m.cbp <- cbp[c(2,1),c(4,5,6,7,8,9)]  
+  m.cpop <- bind_rows(m.cpop, m.cbp)
 
   m.sdopop[,2:6] <- sapply(m.sdopop[,2:6], function(x) gsub("NA","",x))
+  m.sdobp[,2:5] <- sapply(m.sdobp[,2:5], function(x) gsub("NA","",x))
   m.cpop[,2:6] <- sapply(m.cpop[,2:6], function(x) gsub("NA","",x))
-  m.sdobp[,2:6] <- sapply(m.sdobp[,2:6], function(x) gsub("NA","",x))
-  m.cbp[,2:6] <- sapply(m.cbp[,2:6], function(x) gsub("NA","",x))
   
-
   sdopoptab <-  pop_tab(m.sdopop,"<b><u>State Demography Office Population Estimates</u></b>")
-  cpoptab <- pop_tab(m.cpop,"<b><u>U.S. Census Bureau Population Estimates</u></b>")
+  cpoptab <- pop_tab(m.cpop,"<b><u>U.S. Census Bureau Population and Housing Estimates</u></b>")
   
   sdobptab <-  bp_tab(m.sdobp,"<b><u>State Demography Office Housing Estimates</u></b>")
-  cbptab <- bp_tab(m.cbp,"<b><u>U.S. Census Bureau Housing Estimates</u></b>")
+ 
   
 #  outtab <- rbind(sdopoptab,sdobptab,cbptab)
-  outtab <- rbind(sdopoptab,cpoptab,sdobptab,cbptab)  
+  outtab <- rbind(sdopoptab,sdobptab,cpoptab)  
   return(outtab)
 }
 
