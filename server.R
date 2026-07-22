@@ -18,19 +18,12 @@ pop_tab <- function(indata,capstr) {
   popname <- names(indata)
   inmat <- as.matrix(indata)
 
-#Creating Column Names  2020:  Modify this to account for removal of 2010 Census and 2010 Adj. Census
- popname[1] <- "Variable"
- # popname[2] <- "2010 Census"
-#  popname[3] <- "2010 Adj. Census"
-  
-  popname[2] <- paste0("July ", popname[2])
-  popname[3] <- paste0("July ", popname[3])
-  popname[4] <- paste0("July ", popname[4])
-  popname[5] <- paste0("July ", popname[5])
-  popname[6] <- paste0("July ", popname[6])
-  popname[7] <- paste0("July ", popname[7]) 
-  
-  
+#Creating Column Names  for the population estimates table
+  popname[1] <- "Variable"
+  for(i in 2:length(popname)){
+    popname[i] <- paste0("July ", popname[i])
+  }
+ 
   outtab <- inmat %>%
   kable(format='html',
         row.names=FALSE,
@@ -54,14 +47,13 @@ bp_tab <- function(indata,capstr){
   inmat <- as.matrix(indata)
 
 
-  #Creating Column Names
+  #Creating Column Names  These have to be updated by hand
   housename[1] <- "Variable"
-  housename[2] <- "2020 to 2021"
-  housename[3] <- "2021 to 2022"
-  housename[4] <- "2022 to 2023"
-  housename[5] <- "2023 to 2024"
-  housename[6] <- "2024 to 2025"
-  housename[7] <- "2025 to 2026"
+  styr <- 2020
+  for(i in 2: length(housename)){
+    housename[i] <- paste0(styr," to ", styr+1)
+    styr <- styr + 1
+  }
 
   outtab <- inmat %>%
     kable(format='html',
@@ -83,17 +75,15 @@ bp_tab <- function(indata,capstr){
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
 
-  # Change the column selection to reflect the correct years for each data frame,
-  # update the column selection in the NA fixing code below
-  m.sdopop <- sdopop[c(6, 1, 2, 5, 3, 7, 8, 4),c(4:10)]  
-  m.cpop <- cpop[1,c(4:10)]
-  m.sdobp <- sdobp[,c(4:10)]  
-  m.cbp <- cbp[c(2,1),c(4:10)]  
+  m.sdopop <- sdopop[c(6, 1, 2, 5, 3, 7, 8, 4),4:ncol(sdopop)]  
+  m.cpop <- cpop[1,4:ncol(cpop)]
+  m.sdobp <- sdobp[c(1:3),4:ncol(sdobp)]  
+  m.cbp <- cbp[c(2,1),4:ncol(cbp)]  
   m.cpop <- bind_rows(m.cpop, m.cbp)
 
-  m.sdopop[,2:7] <- sapply(m.sdopop[,2:7], function(x) gsub("NA","",x))
-  m.sdobp[,2:7] <- sapply(m.sdobp[,2:7], function(x) gsub("NA","",x))
-  m.cpop[,2:7] <- sapply(m.cpop[,2:7], function(x) gsub("NA","",x))
+  m.sdopop[,2:ncol(m.sdopop)] <- sapply(m.sdopop[,2:ncol(m.sdopop)], function(x) gsub("NA","",x))
+  m.sdobp[,2:ncol(m.sdobp)] <- sapply(m.sdobp[,2:ncol(m.sdobp)], function(x) gsub("NA","",x))
+  m.cpop[,2:ncol(m.cpop)] <- sapply(m.cpop[,2:ncol(m.cpop)], function(x) gsub("NA","",x))
   
   sdopoptab <-  pop_tab(m.sdopop,"<b><u>State Demography Office Population Estimates</u></b>")
   cpoptab <- pop_tab(m.cpop,"<b><u>U.S. Census Bureau Population and Housing Estimates</u></b>")
