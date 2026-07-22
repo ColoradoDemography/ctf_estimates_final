@@ -70,7 +70,6 @@ poolClose(DOLAPool)
 
 #Modify Place Names file
 
-
 areas <- areas %>% 
   mutate(locid = ifelse(grepl("Unincorporated",areas$place),1,0),
          county = paste0(county, " County"),

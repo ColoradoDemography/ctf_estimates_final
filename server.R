@@ -61,6 +61,7 @@ bp_tab <- function(indata,capstr){
   housename[4] <- "2022 to 2023"
   housename[5] <- "2023 to 2024"
   housename[6] <- "2024 to 2025"
+  housename[7] <- "2025 to 2026"
 
   outtab <- inmat %>%
     kable(format='html',
@@ -82,15 +83,17 @@ bp_tab <- function(indata,capstr){
 tab_proc <- function(sdopop,cpop,sdobp,cbp) {
  #Function that creates combined population and housing tables
 
-  m.sdopop <- sdopop[c(6, 1, 2, 5, 3, 7, 8, 4),c(4,5,6,7,8,9)]  # Change the column selection to reflect the correct years...
-  m.cpop <- cpop[1,c(4,5,6,7,8,9)]
-  m.sdobp <- sdobp[,c(4,6,7,8,9)]  
-  m.cbp <- cbp[c(2,1),c(4,5,6,7,8,9)]  
+  # Change the column selection to reflect the correct years for each data frame,
+  # update the column selection in the NA fixing code below
+  m.sdopop <- sdopop[c(6, 1, 2, 5, 3, 7, 8, 4),c(4:10)]  
+  m.cpop <- cpop[1,c(4:10)]
+  m.sdobp <- sdobp[,c(4:10)]  
+  m.cbp <- cbp[c(2,1),c(4:10)]  
   m.cpop <- bind_rows(m.cpop, m.cbp)
 
-  m.sdopop[,2:6] <- sapply(m.sdopop[,2:6], function(x) gsub("NA","",x))
-  m.sdobp[,2:5] <- sapply(m.sdobp[,2:5], function(x) gsub("NA","",x))
-  m.cpop[,2:6] <- sapply(m.cpop[,2:6], function(x) gsub("NA","",x))
+  m.sdopop[,2:7] <- sapply(m.sdopop[,2:7], function(x) gsub("NA","",x))
+  m.sdobp[,2:7] <- sapply(m.sdobp[,2:7], function(x) gsub("NA","",x))
+  m.cpop[,2:7] <- sapply(m.cpop[,2:7], function(x) gsub("NA","",x))
   
   sdopoptab <-  pop_tab(m.sdopop,"<b><u>State Demography Office Population Estimates</u></b>")
   cpoptab <- pop_tab(m.cpop,"<b><u>U.S. Census Bureau Population and Housing Estimates</u></b>")
