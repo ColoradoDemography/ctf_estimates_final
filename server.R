@@ -1,5 +1,5 @@
 
-# Revision to CTF program Adam Bickford June 2025
+# Revision to CTF program Adam Bickford June 2026 Vintage 2025
 # There are many changes, including updates to tidyverse,
 # addition of code to read data from the postgres database,
 # and update of the data processing steps to read the new
@@ -28,7 +28,7 @@ pop_tab <- function(indata,capstr) {
   popname[4] <- paste0("July ", popname[4])
   popname[5] <- paste0("July ", popname[5])
   popname[6] <- paste0("July ", popname[6])
-   
+  popname[7] <- paste0("July ", popname[7]) 
   
   
   outtab <- inmat %>%
@@ -60,7 +60,7 @@ bp_tab <- function(indata,capstr){
   housename[3] <- "2021 to 2022"
   housename[4] <- "2022 to 2023"
   housename[5] <- "2023 to 2024"
- 
+  housename[6] <- "2024 to 2025"
 
   outtab <- inmat %>%
     kable(format='html',
