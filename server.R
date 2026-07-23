@@ -47,12 +47,10 @@ bp_tab <- function(indata,capstr){
   inmat <- as.matrix(indata)
 
 
-  #Creating Column Names  These have to be updated by hand
+  #Creating Column Names  
   housename[1] <- "Variable"
-  styr <- 2020
-  for(i in 2: length(housename)){
-    housename[i] <- paste0(styr," to ", styr+1)
-    styr <- styr + 1
+  for(i in 3: length(housename)){
+    housename[i] <- paste0(as.numeric(unlist(housename[i]))-1," to ", as.numeric(unlist(housename[i])))
   }
 
   outtab <- inmat %>%
